@@ -3,12 +3,12 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('passed_challengs', {
-      user_id: {
+      userId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false,
       },
-      challeng_id: {
+      challengId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false

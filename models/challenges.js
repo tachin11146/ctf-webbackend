@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   challenges.init({
     name: DataTypes.STRING,
-    category_id: DataTypes.INTEGER,
+    categoryId: DataTypes.INTEGER,
     score: DataTypes.INTEGER,
     quiz: DataTypes.STRING,
     flag: DataTypes.STRING,

@@ -9,12 +9,12 @@ module.exports = {
         autoIncrement: true,
         type: Sequelize.INTEGER
       },
-      first_name: {
+      firstname: {
         type: Sequelize.STRING,
         allowNull: false,
         defaultValue: false
       },
-      last_name: {
+      lastname: {
         type: Sequelize.STRING,
         allowNull: false,
         defaultValue: false
@@ -39,17 +39,17 @@ module.exports = {
         allowNull: true,
         defaultValue: 0
       },
-      team_id: {
+      teamId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         defaultValue: -1
       },
-      create_at: {
+      createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.NOW
       },
-      update_at: {
+      updatedAt: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.NOW

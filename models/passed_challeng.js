@@ -14,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   passed_challeng.init({
-    user_id: DataTypes.INTEGER,
-    challeng_id: DataTypes.INTEGER,
+    userId: DataTypes.INTEGER,
+    challengId: DataTypes.INTEGER,
     passed: DataTypes.BOOLEAN
   }, {
     sequelize,
