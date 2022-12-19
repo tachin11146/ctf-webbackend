@@ -44,11 +44,16 @@ module.exports = (sequelize, DataTypes) => {
       const oldUser = await users.findOne({ where: {email: email} });
 
       if (users.hashedText(password) == oldUser.password) {
-        return {message: "Succes", status: 200}
+        return true
       }
       
-      return {message: "fail", status: 400};
+      return false;
     };
+
+    static async findUser(email){
+      const oldUser = await users.findOne({ where: {email: email} });
+      return oldUser
+    }
   }
   users.init({
     firstname: DataTypes.STRING,

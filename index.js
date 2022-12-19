@@ -18,6 +18,17 @@ app.get('/', (req, res) => {
     res.json({message: 'success', status:200})
 })
 
+// app.use((err, req, res, next) => {
+//   let statusCode = err.status || 500
+//   res.status(statusCode)
+//   res.json({
+//     error: {
+//       status: statusCode,
+//       message: err.message
+//     }
+//   });
+// });
+
 app.listen(config.port, () => {
     console.log(`Server is running on port ${config.port}`);
 });
