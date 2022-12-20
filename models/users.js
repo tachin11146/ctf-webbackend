@@ -11,13 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // users.models = models;
 
-      // users.hasOne(models.teams, {
-      //   as: "member",
-      //   foreignKey: "user_id",
-      //   otherKey: "team_id"
-      // })
     }
 
     static hashedText(password){
@@ -25,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     }
     
     static async createUser(firstname, lastname, email, password, picture, score, team_id){
-      users.count({distinct: 'email'})
+      await users.count({distinct: 'email'})
       .then( async (count) => {
           if (count > 0){
               const old_user = await users.findOne({ where: {email: email} })
@@ -42,9 +36,10 @@ module.exports = (sequelize, DataTypes) => {
 
     static async loginUser(email, password){
       const oldUser = await users.findOne({ where: {email: email} });
-
-      if (users.hashedText(password) == oldUser.password) {
-        return true
+      if (oldUser) {
+        if (users.hashedText(password) == oldUser.password) {
+          return true
+        }
       }
       
       return false;
@@ -53,6 +48,15 @@ module.exports = (sequelize, DataTypes) => {
     static async findUser(email){
       const oldUser = await users.findOne({ where: {email: email} });
       return oldUser
+    }
+
+    static async joinTeam(id, teamId){
+      await users.update({ teamId: teamId }, {
+        where: {
+          id: id
+        }
+      });
+      return {message: 'join team success', status: 200}
     }
   }
   users.init({

@@ -1,7 +1,10 @@
 'use strict';
+const generator = require('generate-password');
+
 const {
-  Model
+  Model, DataTypes
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class teams extends Model {
     /**
@@ -13,21 +16,71 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
 
-    static async createTeam(name) {
-      users.count({distinct: 'name'})
+    static async generateKey(){
+      
+      var checkPassword = true
+      var password
+    while (checkPassword){
+        password = generator.generate({
+          length: 10,
+          numbers: true
+        });
+
+        await teams.count({distinct: 'key'})
+        .then( async (count) => {
+
+            if (count > 0){
+              const oldTeam = await teams.findOne({where: {key: password}})
+              if ( !oldTeam ){
+                checkPassword = false
+              }
+            } else {
+              checkPassword = false
+            }
+        });
+      }
+
+      return password
+      
+    }
+
+    static async createTeam(id, name) {
+      var error
+      var result
+      await teams.count({distinct: 'name'})
       .then( async (count) => {
           if (count > 0){
               const oldTeam = await teams.findOne({ where: {name: name} })
               if (oldTeam) {
-                return {message: "This name has already been used.", status: 400};
-              }
+                // return false
+                error =  {message: "This name has already been used.", status: 400};
+              } 
           }
       });
 
-      const team = await teams.create({name: name})
+      if (error) {
+        return error
+      } 
+  
+      await teams.generateKey()
+      .then( async (key) => {
+        await teams.create({name: name, key: key})
+        await teams.getTeamId(key)
+        .then((id) => {
+          result = {message: "create team success", status: 200, teamId: id};
+        })
+      })
 
-      return {message: "success", status: 400};
+      return result
     };
+
+    static async getTeamId(key){
+      const result = await teams.findOne({where: {key: key}})
+      if (result) {
+        return result.id
+      }
+      return null
+    }
   }
   teams.init({
     name: DataTypes.STRING,

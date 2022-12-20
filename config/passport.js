@@ -32,8 +32,6 @@ passport.use(new JWTStrategy({
         try {
         // find the user in db if needed
         users.findUser(jwtPayload.email).then((result) => {
-            console.log(jwtPayload.email)
-            console.log(result)
             if(jwtPayload.email == result.email) {
                 return cb(null, result);
             } else {

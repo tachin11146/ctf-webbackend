@@ -31,6 +31,7 @@ exports.login = async (req, res, next) => {
         if (err) return next(err)
 
         if(user) {
+            console.log(user)
             const token = jwt.sign(user, config.secret);
             return res.json({user, token});
         } else {
