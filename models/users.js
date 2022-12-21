@@ -11,62 +11,41 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      // define association here
+    }
 
+    static async findAllUserByTeamId(id) {
+      const user = await users.findAll({ where: { teamId: id } })
+      return user
     }
 
     static hashedText(password){
       return crypto.createHash('md5').update(password).digest('hex');
     }
     
-    static async createUser(firstname, lastname, email, password, picture, score, team_id){
-      await users.count({distinct: 'email'})
-      .then( async (count) => {
-          if (count > 0){
-              const old_user = await users.findOne({ where: {email: email} })
-              if (old_user) {
-                return {message: "This e-mail has already been used.", status: 400};
-              }
-          }
-      });
-
-      const user = await users.create({ firstname: firstname, lastname: lastname, email: email, password: users.hashedText(password), picture: picture, score: score, team_id: team_id});
-
-      return {message: "Succes", status: 200};
+    static async createUser(firstname, lastname, email, password){
+      await users.create({ firstname: firstname, lastname: lastname, email: email, password: users.hashedText(password), picture: "no", score: 0, team_id: -1});
+      return {error: false};
     }
 
-    static async loginUser(email, password){
-      const oldUser = await users.findOne({ where: {email: email} });
-      if (oldUser) {
-        if (users.hashedText(password) == oldUser.password) {
-          return true
-        }
-      }
-      
-      return false;
-    };
-
-    static async findUser(email){
-      const oldUser = await users.findOne({ where: {email: email} });
-      return oldUser
+    static async findUserByEmail(email){
+      const user = await users.findOne({ where: { email: email } });
+      return user
     }
 
     static async joinTeam(id, teamId){
-      await users.update({ teamId: teamId }, {
-        where: {
-          id: id
-        }
-      });
-      return {message: 'join team success', status: 200}
+      await users.update({ teamId: teamId }, { where: { id: id } });
+      return {error: false}
     }
   }
   users.init({
-    firstname: DataTypes.STRING,
-    lastname: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    picture: DataTypes.STRING,
-    score: DataTypes.INTEGER,
-    teamId: DataTypes.INTEGER,
+    firstname: { type: DataTypes.STRING, allowNull: false},
+    lastname: { type: DataTypes.STRING, allowNull: false},
+    email: { type: DataTypes.STRING, allowNull: false, unique: true},
+    password: { type: DataTypes.STRING, allowNull: false},
+    picture: { type: DataTypes.STRING, allowNull: true},
+    score: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0},
+    teamId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: -1},
   }, {
     sequelize,
     modelName: 'users',

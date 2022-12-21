@@ -14,13 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   challenges.init({
-    name: DataTypes.STRING,
-    categoryId: DataTypes.INTEGER,
-    score: DataTypes.INTEGER,
-    quiz: DataTypes.STRING,
-    flag: DataTypes.STRING,
-    file: DataTypes.STRING,
-    hint: DataTypes.STRING
+    name: { type: DataTypes.STRING, allowNull: false},
+    categoryId: { type: DataTypes.INTEGER, allowNull: false},
+    score: { type: DataTypes.INTEGER, allowNull: false},
+    quiz: { type: DataTypes.STRING, allowNull: false},
+    flag: { type: DataTypes.STRING, allowNull: false},
+    file: { type: DataTypes.STRING, allowNull: true},
+    hint: { type: DataTypes.STRING, allowNull: true}
   }, {
     sequelize,
     modelName: 'challenges',

@@ -1,34 +1,63 @@
-const models = require('../models');
-const teamsModel = require('../models/teams');
-const usersModel = require('../models/users');
-const {  DataTypes } = require('sequelize');
-const teams = teamsModel(models.sequelize, DataTypes);
-const users = usersModel(models.sequelize, DataTypes);
-const passport = require('passport');
+const models        = require('../models');
+const teamsModel    = require('../models/teams');
+const usersModel    = require('../models/users');
+const { DataTypes } = require('sequelize');
+const teams         = teamsModel(models.sequelize, DataTypes);
+const users         = usersModel(models.sequelize, DataTypes);
+const userService   = require('../services/users');
+const teamService   = require('../services/teams')
+const UserService   = new userService(users, teams);
+const TeamService   = new teamService(users, teams)
 require('../config/passport');
 
 exports.createTeam = async (req, res, next) => {
+    const user = res.locals.user
     const userInput = req.body
+    if ( user.teamId != -1){
+        return next({message: "You already have team", status: 400})
+    }
     if (!(userInput.name)){
-        return res.json({message: "All input is require", status: 400})
+        return next({message: "All input is require", status: 400})
     };
 
-    await passport.authenticate('jwt', { session: false }, async (err, user) => {
-        if (err) return next(err)
-        if (user){
-            const result = await teams.createTeam(user.id, userInput.name)
-            .then( async (result) => {
-                console.log(result)
-                if (result.status == 400){
-                    return res.json(result)
-                } 
-                await users.joinTeam(user.id, result.teamId)
-                .then( (result) => {
-                    return res.json(result)
-                })
-            })
-        };
-    
-    })(req, res, next)
+    const team = await TeamService.createTeam(userInput.name)
+    if (team.error){
+        return next(team)
+    }
+
+    const teamId = await TeamService.findTeamByKey(team.key)
+    const result = await UserService.joinTeam(user.id, teamId.id)
+
+    if (result.error) {
+        return next({message: result.message, status: 400});
+    }
+
+    return res.json({message: "success", status: 200});
 };
 
+exports.joinTeam = async (req, res, next) => {
+    const userInput = req.body
+    const user = res.locals.user
+
+    if (user.teamId != -1) {
+        return next({message: "You already have team", status: 400})
+    }
+    if (!userInput.key) {
+        return next({message: "All input is require", status: 400})
+    }
+
+    const team = await TeamService.findTeamByKey(userInput.key)
+
+    if (team.error){
+        return next({message: "not found team"})
+    }
+
+    UserService.findAllUserByTeamId(team.id).then( (result) => {
+        if (result.length == 3){
+            return next({message: "This team is full", status: 400})
+        }
+    })
+
+    await UserService.joinTeam(user.id, team.id)
+    return res.status(200).json({message: "Success", status: 200} )
+};

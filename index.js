@@ -1,8 +1,8 @@
-const path = require('path');
-const express = require('express');
+const path       = require('path');
+const express    = require('express');
 const bodyParser = require('body-parser');
-const env = process.env.NODE_ENV || 'development'
-const config = require('./config/config')[env];
+const env        = process.env.NODE_ENV || 'development'
+const config     = require('./config/config')[env];
 const routerUser = require('./routes/users');
 const routerTeam = require('./routes/teams');
 
