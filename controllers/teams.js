@@ -29,7 +29,7 @@ exports.createTeam = async (req, res, next) => {
     const result = await UserService.joinTeam(user.id, teamId.id)
 
     if (result.error) {
-        return next({message: result.message, status: 400});
+        return next(result);
     }
 
     return res.json({message: "success", status: 200});
@@ -49,15 +49,20 @@ exports.joinTeam = async (req, res, next) => {
     const team = await TeamService.findTeamByKey(userInput.key)
 
     if (team.error){
-        return next({message: "not found team"})
+        return next(team)
     }
 
-    UserService.findAllUserByTeamId(team.id).then( (result) => {
-        if (result.length == 3){
+    const usersInTeam = UserService.findAllUserByTeamId(team.id)
+    if (usersInTeam){
+        if (usersInTeam.length == 3){
             return next({message: "This team is full", status: 400})
         }
-    })
+    }
 
-    await UserService.joinTeam(user.id, team.id)
+    const result = await UserService.joinTeam(user.id, team.id)
+    if (result.error){
+        return next(result)
+    }
+
     return res.status(200).json({message: "Success", status: 200} )
 };

@@ -11,15 +11,14 @@ class teamService {
         var key
 
         while (checkKey){
-          key = generator.generate({ length: 10, numbers: true });
+          key = generator.generate({ length: 6, numbers: true });
           var team = await this.teams.findTeamByKey(key)
 
           if ( !team ){
-            checkKey = false 
+            return key
           }
         }
-        return key
-      }
+    }
 
     async createTeam(name){
         var team = await this.teams.findTeamByName(name)
@@ -38,7 +37,7 @@ class teamService {
         if (id) {
             return {error: false, id: id}
         }
-        return {error: true}
+        return {error: true, message: "not found team", status: 400}
     }
 }
 

@@ -24,8 +24,8 @@ module.exports = (sequelize, DataTypes) => {
     }
     
     static async createUser(firstname, lastname, email, password){
-      await users.create({ firstname: firstname, lastname: lastname, email: email, password: users.hashedText(password), picture: "no", score: 0, team_id: -1});
-      return {error: false};
+      const result = await users.create({ firstname: firstname, lastname: lastname, email: email, password: users.hashedText(password), picture: "no", score: 0, team_id: -1});
+      return result
     }
 
     static async findUserByEmail(email){
@@ -34,8 +34,8 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static async joinTeam(id, teamId){
-      await users.update({ teamId: teamId }, { where: { id: id } });
-      return {error: false}
+      const result = await users.update({ teamId: teamId }, { where: { id: id } });
+      return result
     }
   }
   users.init({

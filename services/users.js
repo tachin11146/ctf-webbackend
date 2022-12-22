@@ -19,16 +19,22 @@ class userService {
     async createUser(firstname, lastname, email, password){
         const user = await this.users.findUserByEmail(email)
         if (user){
-            return {error: true, message: "This e-mail has already been used."};
+            return {error: true, message: "This e-mail has already been used.", status: 400};
         } 
 
         const result = await this.users.createUser(firstname, lastname, email, password)
-        return result
+        if (result){
+            return {error: false}
+        }
+        return {error: true, message: "Create user is fail", status:400}
     }
 
     async joinTeam(id, teamId){
         const result = await this.users.joinTeam(id, teamId)
-        return result
+        if (result){
+            return {error: false}
+        }
+        return {error: true, message: "join team fail", status:400}
     }
 
     async findAllUserByTeamId(id){

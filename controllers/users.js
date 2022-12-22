@@ -20,7 +20,7 @@ exports.register = async (req, res, next) => {
         
         const result = await userService.createUser(userInput.firstname, userInput.lastname, userInput.email, userInput.password);
         if (result.error){
-            return next({message: result.message, status: 400})
+            return next(result)
         }
 
         return res.status(200).json({message: "Success", status: 200});
@@ -36,18 +36,17 @@ exports.login = async (req, res, next) => {
         return next({message: "All input is require", status: 400});
     };
 
-    await userService.findUserByEmail(userInput.email).then( async (user) => {
-        if (!user){
-            return next({message: "email or password is incorrect", status: 400});
-        }
+    const user = await userService.findUserByEmail(userInput.email)
+    if (!user){
+        return next({message: "email or password is incorrect", status: 400});
+    }
 
-        await userService.hashText(userInput.password).then( (password) => {
-            if (user.password == password){
-                const token = jwt.sign( {id: user.id, email: user.email}, config.secret );
-                return res.status(200).json({message: "Success", token, status: 200});
-            } else {
-                return next({message: "email or password is incorrect", status: 400});
-            }
-        })
-    });
+    const password = await userService.hashText(userInput.password)
+    if (user.password == password){
+        const token = jwt.sign( {id: user.id, email: user.email}, config.secret );
+        return res.status(200).json({message: "Success", token, status: 200});
+        
+    } else {
+        return next({message: "email or password is incorrect", status: 400});
+    }
 };
