@@ -27,9 +27,11 @@ class teamService {
         }
 
         const key = await this.generateKey()
-        await this.teams.createTeam(name, key)
-
-        return {error: false, key: key}
+        const result = await this.teams.createTeam(name, key)
+        if (result){
+            return {error: false, key: key}
+        }
+        return {error: true, message: "Create team fail", status: 400}
     }
 
     async findTeamByKey(key){

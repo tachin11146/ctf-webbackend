@@ -17,24 +17,19 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static async createTeam(name, key) {
-      await teams.create({name: name, key: key})
-      return {error: false}
+      const result = await teams.create({name: name, key: key})
+      return result
     };
 
     static async findTeamByKey(key){
       const result = await teams.findOne({where: {key: key}})
-      if (result) {
-        return result.id
-      }
-      return null
+      return result.id
+
     }
 
     static async findTeamByName(name){
       const result = await teams.findOne({where: {name: name}})
-      if (result) {
-        return result.id
-      }
-      return null
+      return result
     }
 
   }

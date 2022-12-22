@@ -1,7 +1,7 @@
 const models         = require('../models');
 const teamsModel     = require('../models/teams');
 const usersModel     = require('../models/users');
-const {  DataTypes } = require('sequelize');
+const { DataTypes }  = require('sequelize');
 const teams          = teamsModel(models.sequelize, DataTypes);
 const users          = usersModel(models.sequelize, DataTypes);
 const jwt            = require('jsonwebtoken');
